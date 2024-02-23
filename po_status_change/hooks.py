@@ -11,7 +11,8 @@ app_license = "mit"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/po_status_change/css/po_status_change.css"
-# app_include_js = "/assets/po_status_change/js/po_status_change.js"
+# app_include_js = [
+# ]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/po_status_change/css/po_status_change.css"
@@ -114,9 +115,11 @@ app_license = "mit"
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"Purchase Order": "po_status_change.purchase_order.PurchaseOrderCustom",
+	"Purchase Receipt": "po_status_change.purchase_receipt.PurchaseReceiptCustom",
+    "Purchase Invoice": "po_status_change.purchase_invoice.PurchaseInvoiceCustom"
+}
 
 # Document Events
 # ---------------
@@ -227,3 +230,6 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+fixtures = [
+    {"dt": "Custom Field", "filters": [["module", "=", "Po Status Change"]]}
+]
