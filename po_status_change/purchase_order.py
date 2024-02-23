@@ -23,20 +23,22 @@ class PurchaseOrderCustom(PurchaseOrder):
         else:
             if doc_before_save.workflow_state != self.workflow_state:
                 if self.workflow_state != "Expect Delivery":
-                    self.custom_purchase_order_status[-1].update({
-                        "end_time": now_datetime(),
-                        "time_duration": (now_datetime() - self.custom_purchase_order_status[-1].start_time).total_seconds()
-                    })
+                    if len(self.custom_purchase_order_status) > 0:
+                        self.custom_purchase_order_status[-1].update({
+                            "end_time": now_datetime(),
+                            "time_duration": (now_datetime() - self.custom_purchase_order_status[-1].start_time).total_seconds()
+                        })
                     self.append("custom_purchase_order_status", {
                         "user": frappe.session.user,
                         "status": self.workflow_state,
                         "start_time": now_datetime()
                     })
                 else:
-                    self.custom_purchase_order_status[-1].update({
-                        "end_time": now_datetime(),
-                        "time_duration": (now_datetime() - self.custom_purchase_order_status[-1].start_time).total_seconds()
-                    })
+                    if len(self.custom_purchase_order_status) > 0:
+                        self.custom_purchase_order_status[-1].update({
+                            "end_time": now_datetime(),
+                            "time_duration": (now_datetime() - self.custom_purchase_order_status[-1].start_time).total_seconds()
+                        })
                     self.append("custom_purchase_order_status", {
                         "user": frappe.session.user,
                         "status": self.status,
