@@ -3,12 +3,9 @@ from frappe.utils import now_datetime
 from erpnext.buying.doctype.purchase_order.purchase_order import PurchaseOrder
 from frappe import _
 
-frappe.utils.logger.set_log_level("DEBUG")
-logger = frappe.logger("api", allow_site=True, file_count=50)
-
 class PurchaseOrderCustom(PurchaseOrder):
     def validate(self):
-        super(PurchaseOrderCustom, self).validate()
+        super().validate()
         self.update_status_change_log()
 
 
