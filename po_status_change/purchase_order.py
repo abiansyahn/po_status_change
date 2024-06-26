@@ -13,7 +13,6 @@ class PurchaseOrderCustom(PurchaseOrder):
         doc_before_save = self.get_doc_before_save()
         if self.get("__islocal"):
             self.append("custom_purchase_order_status", {
-                "user": frappe.session.user,
                 "status": self.workflow_state,
                 "start_time": now_datetime()
             })
@@ -22,22 +21,22 @@ class PurchaseOrderCustom(PurchaseOrder):
                 if self.workflow_state != "Expect Delivery":
                     if len(self.custom_purchase_order_status) > 0:
                         self.custom_purchase_order_status[-1].update({
+                            "user": frappe.session.user,
                             "end_time": now_datetime(),
                             "time_duration": (now_datetime() - self.custom_purchase_order_status[-1].start_time).total_seconds()
                         })
                     self.append("custom_purchase_order_status", {
-                        "user": frappe.session.user,
                         "status": self.workflow_state,
                         "start_time": now_datetime()
                     })
                 else:
                     if len(self.custom_purchase_order_status) > 0:
                         self.custom_purchase_order_status[-1].update({
+                            "user": frappe.session.user,
                             "end_time": now_datetime(),
                             "time_duration": (now_datetime() - self.custom_purchase_order_status[-1].start_time).total_seconds()
                         })
                     self.append("custom_purchase_order_status", {
-                        "user": frappe.session.user,
                         "status": self.status,
                         "start_time": now_datetime()
                     })
