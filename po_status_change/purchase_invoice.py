@@ -9,7 +9,8 @@ class PurchaseInvoiceCustom(PurchaseInvoice):
         po_list = []
         for item in self.items:
             if item.purchase_order not in po_list:
-                po_list.append(item.purchase_order)
+                if item.purchase_order:
+                        po_list.append(item.purchase_order)
         
         for po in po_list:
             po_doc = frappe.get_doc("Purchase Order", po)
