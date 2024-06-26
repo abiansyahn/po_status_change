@@ -18,6 +18,7 @@ class PurchaseReceiptCustom(PurchaseReceipt):
                 if len(po_doc.custom_purchase_order_status) > 0:
                     po_doc.custom_purchase_order_status[-1].update(
                         {
+                            "user": frappe.session.user,
                             "end_time": now_datetime(),
                             "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
                         }
@@ -25,7 +26,6 @@ class PurchaseReceiptCustom(PurchaseReceipt):
                     po_doc.save()
 
                 po_doc.append("custom_purchase_order_status", {
-                    "user": frappe.session.user,
                     "status": "To Bill",
                     "start_time": now_datetime()
                 })
@@ -35,6 +35,7 @@ class PurchaseReceiptCustom(PurchaseReceipt):
                 if len(po_doc.custom_purchase_order_status) > 0:
                     po_doc.custom_purchase_order_status[-1].update(
                         {
+                            "user": frappe.session.user,
                             "end_time": now_datetime(),
                             "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
                         }
@@ -42,7 +43,6 @@ class PurchaseReceiptCustom(PurchaseReceipt):
                     po_doc.save()
                 
                 po_doc.append("custom_purchase_order_status", {
-                    "user": frappe.session.user,
                     "status": "Completed",
                     "start_time": now_datetime()
                 })
@@ -63,6 +63,7 @@ class PurchaseReceiptCustom(PurchaseReceipt):
                 if len(po_doc.custom_purchase_order_status) > 0:
                     po_doc.custom_purchase_order_status[-1].update(
                         {
+                            "user": frappe.session.user,
                             "end_time": now_datetime(),
                             "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
                         }
@@ -70,7 +71,6 @@ class PurchaseReceiptCustom(PurchaseReceipt):
                     po_doc.save()
 
                 po_doc.append("custom_purchase_order_status", {
-                    "user": frappe.session.user,
                     "status": "To Receive",
                     "start_time": now_datetime()
                 })
@@ -80,6 +80,7 @@ class PurchaseReceiptCustom(PurchaseReceipt):
                 if len(po_doc.custom_purchase_order_status) > 0:
                     po_doc.custom_purchase_order_status[-1].update(
                         {
+                            "user": frappe.session.user,
                             "end_time": now_datetime(),
                             "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
                         }
@@ -87,7 +88,6 @@ class PurchaseReceiptCustom(PurchaseReceipt):
                     po_doc.save()
 
                 po_doc.append("custom_purchase_order_status", {
-                    "user": frappe.session.user,
                     "status": "To Receive and Bill",
                     "start_time": now_datetime()
                 })
