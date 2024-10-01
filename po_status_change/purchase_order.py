@@ -1,7 +1,6 @@
 import frappe
 from frappe.utils import now_datetime
 from frappe import _
-frappe.utils.logger.set_log_level("DEBUG")
 
 def update_status_change_log(self, method):
     doc_before_save = self.get_doc_before_save()
