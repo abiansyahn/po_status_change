@@ -115,23 +115,29 @@ app_license = "mit"
 # ---------------
 # Override standard doctype classes
 
-override_doctype_class = {
-	"Purchase Order": "po_status_change.purchase_order.PurchaseOrderCustom",
-	"Purchase Receipt": "po_status_change.purchase_receipt.PurchaseReceiptCustom",
-    "Purchase Invoice": "po_status_change.purchase_invoice.PurchaseInvoiceCustom"
-}
+# override_doctype_class = {
+# 	"Purchase Order": "po_status_change.purchase_order.PurchaseOrderCustom",
+# 	"Purchase Receipt": "po_status_change.purchase_receipt.PurchaseReceiptCustom",
+#     "Purchase Invoice": "po_status_change.purchase_invoice.PurchaseInvoiceCustom"
+# }
 
 # Document Events
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Purchase Receipt": {
+		"on_submit": "po_status_change.purchase_receipt.on_submit",
+		"on_cancel": "po_status_change.purchase_receipt.on_cancel",
+	},
+    "Purchase Order": {
+        "validate": "po_status_change.purchase_order.update_status_change_log"
+	},
+    "Purchase Invoice": {
+		"on_submit": "po_status_change.purchase_invoice.on_submit",
+		"on_cancel": "po_status_change.purchase_invoice.on_cancel",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
