@@ -61,7 +61,7 @@
  "modified": "2024-01-30 22:11:00.912000",
  "modified_by": "Administrator",
  "module": "Po Status Change",
- "name": "Purchase Order Status Update",
+ "name": "Workflow Status Update",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",
