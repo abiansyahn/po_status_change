@@ -1,94 +1,142 @@
 import frappe
 from frappe.utils import now_datetime
-from erpnext.stock.doctype.purchase_receipt.purchase_receipt import PurchaseReceipt
 
-class PurchaseReceiptCustom(PurchaseReceipt):
-    def on_submit(self):
-        super(PurchaseReceiptCustom, self).on_submit()
+def on_submit(self, method):
+    update_purchase_order_status(self.items)
 
-        po_list = []
-        for item in self.items:
-            if item.purchase_order not in po_list:
-                po_list.append(item.purchase_order)
-        
-        for po in po_list:
-            po_doc = frappe.get_doc("Purchase Order", po)
+def on_cancel(self, method):
+    update_purchase_order_status(self.items)
 
-            if po_doc.per_received >= 100 and po_doc.per_billed < 100:
-                if len(po_doc.custom_purchase_order_status) > 0:
-                    po_doc.custom_purchase_order_status[-1].update(
-                        {
-                            "user": frappe.session.user,
-                            "end_time": now_datetime(),
-                            "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
-                        }
-                    )
-                    po_doc.save()
-
-                po_doc.append("custom_purchase_order_status", {
-                    "status": "To Bill",
+def update_status_change_log(self, method):
+    if self.workflow_state:
+        if len(self.custom_workflow_status) > 0:
+            if self.custom_workflow_status[-1].status != self.workflow_state:
+                if self.workflow_state != "Delivery Checked":
+                    frappe.db.set_value("Workflow Status Update", self.custom_workflow_status[-1].name, {
+                        "user": frappe.session.user,
+                        "end_time": now_datetime(),
+                        "time_duration": (now_datetime() - self.custom_workflow_status[-1].start_time).total_seconds()
+                    })
+                    new_status = frappe.get_doc({
+                        "doctype": "Workflow Status Update",
+                        "parent": self.name,
+                        "parenttype": "Purchase Receipt",
+                        "parentfield": "custom_workflow_status",
+                        "status": self.workflow_state,
+                        "start_time": now_datetime(),
+                        "idx": self.custom_workflow_status[-1].idx + 1
+                    })
+                    new_status.insert()
+                    frappe.db.commit()
+                else:
+                    frappe.db.set_value("Workflow Status Update", self.custom_workflow_status[-1].name, {
+                        "user": frappe.session.user,
+                        "end_time": now_datetime(),
+                        "time_duration": (now_datetime() - self.custom_workflow_status[-1].start_time).total_seconds()
+                    })
+                    new_status = frappe.get_doc({
+                        "doctype": "Workflow Status Update",
+                        "parent": self.name,
+                        "parenttype": "Purchase Receipt",
+                        "parentfield": "custom_workflow_status",
+                        "status": self.status,
+                        "start_time": now_datetime(),
+                        "idx": self.custom_workflow_status[-1].idx + 1
+                    })
+                    new_status.insert()
+                    frappe.db.commit()
+        else:
+            if self.workflow_state != "Delivery Checked":
+                new_status = frappe.get_doc({
+                    "doctype": "Workflow Status Update",
+                    "parent": self.name,
+                    "parenttype": "Purchase Receipt",
+                    "parentfield": "custom_workflow_status",
+                    "status": self.workflow_state,
                     "start_time": now_datetime()
                 })
+                new_status.insert()
+            else:
+                new_status = frappe.get_doc({
+                    "doctype": "Workflow Status Update",
+                    "parent": self.name,
+                    "parenttype": "Purchase Receipt",
+                    "parentfield": "custom_workflow_status",
+                    "status": self.status,
+                    "start_time": now_datetime()
+                })
+                new_status.insert()
+
+def update_purchase_order_status(items):
+    po_list = []
+    for item in items:
+        if item.purchase_order not in po_list:
+            po_list.append(item.purchase_order)
+    
+    for po in po_list:
+        po_doc = frappe.get_doc("Purchase Order", po)
+
+        if po_doc.per_received >= 100 and po_doc.per_billed < 100:
+            if len(po_doc.custom_purchase_order_status) > 0:
+                po_doc.custom_purchase_order_status[-1].update(
+                    {
+                        "user": frappe.session.user,
+                        "end_time": now_datetime(),
+                        "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
+                    }
+                )
                 po_doc.save()
 
-            if po_doc.per_received >= 100 and po_doc.per_billed >= 100:
-                if len(po_doc.custom_purchase_order_status) > 0:
-                    po_doc.custom_purchase_order_status[-1].update(
-                        {
-                            "user": frappe.session.user,
-                            "end_time": now_datetime(),
-                            "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
-                        }
-                    )
-                    po_doc.save()
-                
-                po_doc.append("custom_purchase_order_status", {
-                    "status": "Completed",
-                    "start_time": now_datetime()
-                })
-                po_doc.save()
-
-    def on_cancel(self):
-        super(PurchaseReceiptCustom, self).on_cancel()
-
-        po_list = []
-        for item in self.items:
-            if item.purchase_order not in po_list:
-                po_list.append(item.purchase_order)
-        
-        for po in po_list:
-            po_doc = frappe.get_doc("Purchase Order", po)
-
-            if po_doc.per_received < 100 and po_doc.per_billed >= 100:
-                if len(po_doc.custom_purchase_order_status) > 0:
-                    po_doc.custom_purchase_order_status[-1].update(
-                        {
-                            "user": frappe.session.user,
-                            "end_time": now_datetime(),
-                            "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
-                        }
-                    )
-                    po_doc.save()
-
-                po_doc.append("custom_purchase_order_status", {
-                    "status": "To Receive",
-                    "start_time": now_datetime()
-                })
+            po_doc.append("custom_purchase_order_status", {
+                "status": "To Bill",
+                "start_time": now_datetime()
+            })
+            po_doc.save()
+        elif po_doc.per_received >= 100 and po_doc.per_billed >= 100:
+            if len(po_doc.custom_purchase_order_status) > 0:
+                po_doc.custom_purchase_order_status[-1].update(
+                    {
+                        "user": frappe.session.user,
+                        "end_time": now_datetime(),
+                        "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
+                    }
+                )
                 po_doc.save()
             
-            if po_doc.per_received < 100 and po_doc.per_billed < 100:
-                if len(po_doc.custom_purchase_order_status) > 0:
-                    po_doc.custom_purchase_order_status[-1].update(
-                        {
-                            "user": frappe.session.user,
-                            "end_time": now_datetime(),
-                            "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
-                        }
-                    )
-                    po_doc.save()
-
-                po_doc.append("custom_purchase_order_status", {
-                    "status": "To Receive and Bill",
-                    "start_time": now_datetime()
-                })
+            po_doc.append("custom_purchase_order_status", {
+                "status": "Completed",
+                "start_time": now_datetime()
+            })
+            po_doc.save()
+        elif po_doc.per_received < 100 and po_doc.per_billed >= 100:
+            if len(po_doc.custom_purchase_order_status) > 0:
+                po_doc.custom_purchase_order_status[-1].update(
+                    {
+                        "user": frappe.session.user,
+                        "end_time": now_datetime(),
+                        "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
+                    }
+                )
                 po_doc.save()
+
+            po_doc.append("custom_purchase_order_status", {
+                "status": "To Receive",
+                "start_time": now_datetime()
+            })
+            po_doc.save()
+        elif po_doc.per_received < 100 and po_doc.per_billed < 100:
+            if len(po_doc.custom_purchase_order_status) > 0:
+                po_doc.custom_purchase_order_status[-1].update(
+                    {
+                        "user": frappe.session.user,
+                        "end_time": now_datetime(),
+                        "time_duration": (now_datetime() - po_doc.custom_purchase_order_status[-1].start_time).total_seconds()
+                    }
+                )
+                po_doc.save()
+
+            po_doc.append("custom_purchase_order_status", {
+                "status": "To Receive and Bill",
+                "start_time": now_datetime()
+            })
+            po_doc.save()
