@@ -5,12 +5,12 @@ def on_submit(self, method):
     update_purchase_order_status(self.items)
     update_purchase_receipt_status(self.items)
 
-def on_cancel(self):
+def on_cancel(self, method):
     update_purchase_order_status(self.items)
     update_purchase_receipt_status(self.items)
 
 def update_status_change_log(self, method):
-    if self.workflow_state:
+    if self.get("workflow_state"):
         if len(self.custom_workflow_status) > 0:
             if self.custom_workflow_status[-1].status != self.workflow_state:
                 if self.workflow_state != "To Pay":

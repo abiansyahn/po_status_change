@@ -3,7 +3,7 @@ from frappe.utils import now_datetime
 from frappe import _
 
 def update_status_change_log(self, method):
-    if self.workflow_state:
+    if self.get("workflow_state"):
         if len(self.custom_purchase_order_status) > 0:
             if self.custom_purchase_order_status[-1].status != self.workflow_state:
                 if self.workflow_state != "Expect Delivery":

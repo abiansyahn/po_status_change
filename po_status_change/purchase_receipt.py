@@ -8,7 +8,7 @@ def on_cancel(self, method):
     update_purchase_order_status(self.items)
 
 def update_status_change_log(self, method):
-    if self.workflow_state:
+    if self.get("workflow_state"):
         if len(self.custom_workflow_status) > 0:
             if self.custom_workflow_status[-1].status != self.workflow_state:
                 if self.workflow_state != "Delivery Checked":
