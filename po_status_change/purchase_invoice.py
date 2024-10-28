@@ -9,6 +9,10 @@ def on_cancel(self, method):
     update_purchase_order_status(self.items)
     update_purchase_receipt_status(self.items)
 
+def check_if_new_doc(self, method):
+    if self.is_new():
+        self.custom_workflow_status = []
+
 def update_status_change_log(self, method):
     if self.get("workflow_state"):
         if len(self.custom_workflow_status) > 0:
@@ -72,6 +76,8 @@ def update_status_change_log(self, method):
 def update_purchase_order_status(items):
     po_list = []
     for item in items:
+        if item.purchase_order == None or item.purchase_order == "" or item.purchase_order == "None":
+            continue
         if item.purchase_order not in po_list:
             po_list.append(item.purchase_order)
     
@@ -146,6 +152,8 @@ def update_purchase_order_status(items):
 def update_purchase_receipt_status(items):
     pr_list = []
     for item in items:
+        if item.purchase_receipt == None or item.purchase_receipt == "" or item.purchase_receipt == "None":
+            continue
         if item.purchase_receipt not in pr_list:
             pr_list.append(item.purchase_receipt)
     

@@ -2,8 +2,12 @@ import frappe
 from frappe.utils import now_datetime
 from frappe import _
 
+def check_if_new_doc(self, method):
+    if self.is_new():
+        self.custom_purchase_order_status = []
+
 def update_status_change_log(self, method):
-    if self.get("workflow_state"):
+    if self.get("workflow_state") and not self.is_new():
         if len(self.custom_purchase_order_status) > 0:
             if self.custom_purchase_order_status[-1].status != self.workflow_state:
                 if self.workflow_state != "Expect Delivery":
