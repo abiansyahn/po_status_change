@@ -7,8 +7,12 @@ def on_submit(self, method):
 def on_cancel(self, method):
     update_purchase_order_status(self.items)
 
+def check_if_new_doc(self, method):
+    if self.is_new():
+        self.custom_workflow_status = []
+
 def update_status_change_log(self, method):
-    if self.workflow_state:
+    if self.get("workflow_state"):
         if len(self.custom_workflow_status) > 0:
             if self.custom_workflow_status[-1].status != self.workflow_state:
                 if self.workflow_state != "Delivery Checked":
@@ -27,7 +31,6 @@ def update_status_change_log(self, method):
                         "idx": self.custom_workflow_status[-1].idx + 1
                     })
                     new_status.insert()
-                    frappe.db.commit()
                 else:
                     frappe.db.set_value("Workflow Status Update", self.custom_workflow_status[-1].name, {
                         "user": frappe.session.user,
@@ -44,7 +47,6 @@ def update_status_change_log(self, method):
                         "idx": self.custom_workflow_status[-1].idx + 1
                     })
                     new_status.insert()
-                    frappe.db.commit()
         else:
             if self.workflow_state != "Delivery Checked":
                 new_status = frappe.get_doc({

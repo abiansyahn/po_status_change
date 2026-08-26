@@ -127,16 +127,21 @@ app_license = "mit"
 
 doc_events = {
 	"Purchase Receipt": {
+        "on_change": "po_status_change.purchase_receipt.update_status_change_log",
 		"on_submit": "po_status_change.purchase_receipt.on_submit",
 		"on_cancel": "po_status_change.purchase_receipt.on_cancel",
+		"validate": "po_status_change.purchase_receipt.check_if_new_doc",
 	},
     "Purchase Order": {
         "on_change": "po_status_change.purchase_order.update_status_change_log",
         "on_cancel": "po_status_change.purchase_order.update_status_change_log",
+        "validate": "po_status_change.purchase_order.check_if_new_doc",
 	},
     "Purchase Invoice": {
+        "on_change": "po_status_change.purchase_invoice.update_status_change_log",
 		"on_submit": "po_status_change.purchase_invoice.on_submit",
 		"on_cancel": "po_status_change.purchase_invoice.on_cancel",
+		"validate": "po_status_change.purchase_invoice.check_if_new_doc",
 	}
 }
 
