@@ -33,12 +33,11 @@ def update_status_change_log(self, method):
                         "idx": self.custom_workflow_status[-1].idx + 1
                     })
                     new_status.insert()
-                    frappe.db.commit()
                 else:
                     frappe.db.set_value("Workflow Status Update", self.custom_workflow_status[-1].name, {
                         "user": frappe.session.user,
                         "end_time": now_datetime(),
-                        "time_duration": (now_datetime() - self.custom_workflow_status[-1].start_time).total_seconds()
+                        "time_duration": (now_datetime() - frappe.utils.get_datetime(self.custom_workflow_status[-1].start_time)).total_seconds()
                     })
                     new_status = frappe.get_doc({
                         "doctype": "Workflow Status Update",
@@ -50,7 +49,6 @@ def update_status_change_log(self, method):
                         "idx": self.custom_workflow_status[-1].idx + 1
                     })
                     new_status.insert()
-                    frappe.db.commit()
         else:
             if self.workflow_state != "To Pay":
                 new_status = frappe.get_doc({

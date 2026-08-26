@@ -26,7 +26,6 @@ def update_status_change_log(self, method):
                         "idx": self.custom_purchase_order_status[-1].idx + 1
                     })
                     new_status.insert()
-                    frappe.db.commit()
                 else:
                     frappe.db.set_value("Workflow Status Update", self.custom_purchase_order_status[-1].name, {
                         "user": frappe.session.user,
@@ -43,7 +42,6 @@ def update_status_change_log(self, method):
                         "idx": self.custom_purchase_order_status[-1].idx + 1
                     })
                     new_status.insert()
-                    frappe.db.commit()
         else:
             if self.workflow_state != "Expect Delivery":
                 new_status = frappe.get_doc({

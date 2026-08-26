@@ -31,7 +31,6 @@ def update_status_change_log(self, method):
                         "idx": self.custom_workflow_status[-1].idx + 1
                     })
                     new_status.insert()
-                    frappe.db.commit()
                 else:
                     frappe.db.set_value("Workflow Status Update", self.custom_workflow_status[-1].name, {
                         "user": frappe.session.user,
@@ -48,7 +47,6 @@ def update_status_change_log(self, method):
                         "idx": self.custom_workflow_status[-1].idx + 1
                     })
                     new_status.insert()
-                    frappe.db.commit()
         else:
             if self.workflow_state != "Delivery Checked":
                 new_status = frappe.get_doc({
