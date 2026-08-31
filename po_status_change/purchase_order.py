@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import now_datetime
+from frappe.utils import now_datetime, get_datetime
 from frappe import _
 
 def check_if_new_doc(self, method):
@@ -7,6 +7,8 @@ def check_if_new_doc(self, method):
         self.custom_purchase_order_status = []
 
 def update_status_change_log(self, method):
+    if self.flags.get("via_po_status_change"):
+        return
     if self.get("workflow_state") and not self.is_new():
         if len(self.custom_purchase_order_status) > 0:
             if self.custom_purchase_order_status[-1].status != self.workflow_state:
@@ -14,7 +16,7 @@ def update_status_change_log(self, method):
                     frappe.db.set_value("Workflow Status Update", self.custom_purchase_order_status[-1].name, {
                         "user": frappe.session.user,
                         "end_time": now_datetime(),
-                        "time_duration": (now_datetime() - self.custom_purchase_order_status[-1].start_time).total_seconds()
+                        "time_duration": (now_datetime() - get_datetime(self.custom_purchase_order_status[-1].start_time)).total_seconds() if self.custom_purchase_order_status[-1].start_time else None
                     })
                     new_status = frappe.get_doc({
                         "doctype": "Workflow Status Update",
@@ -30,7 +32,7 @@ def update_status_change_log(self, method):
                     frappe.db.set_value("Workflow Status Update", self.custom_purchase_order_status[-1].name, {
                         "user": frappe.session.user,
                         "end_time": now_datetime(),
-                        "time_duration": (now_datetime() - self.custom_purchase_order_status[-1].start_time).total_seconds()
+                        "time_duration": (now_datetime() - get_datetime(self.custom_purchase_order_status[-1].start_time)).total_seconds() if self.custom_purchase_order_status[-1].start_time else None
                     })
                     new_status = frappe.get_doc({
                         "doctype": "Workflow Status Update",

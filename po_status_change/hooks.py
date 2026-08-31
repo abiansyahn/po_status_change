@@ -134,7 +134,6 @@ doc_events = {
 	},
     "Purchase Order": {
         "on_change": "po_status_change.purchase_order.update_status_change_log",
-        "on_cancel": "po_status_change.purchase_order.update_status_change_log",
         "validate": "po_status_change.purchase_order.check_if_new_doc",
 	},
     "Purchase Invoice": {
